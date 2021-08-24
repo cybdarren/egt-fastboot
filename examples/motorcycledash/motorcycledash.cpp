@@ -18,6 +18,10 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+
+#include <linux/i2c-dev.h>
+#include <i2c/smbus.h>
+
 #define HAVE_LIBPLANES
 
 #ifdef HAVE_LIBPLANES
@@ -210,6 +214,8 @@ st_fuel_temp_t g_temp_table[6] = {
     {194, 167}
 };
 
+// forward reference
+void signalI2C();
 
 class MotorDash : public egt::experimental::Gauge
 {
@@ -2387,9 +2393,69 @@ int main(int argc, char** argv)
     };
     window.on_event(handle_touch);
 #endif
+
     //gettimeofday(&time2, NULL);
     //timediff = (time1.tv_sec < time2.tv_sec) ? (time2.tv_usec + 1000000 - time1.tv_usec) : (time2.tv_usec - time1.tv_usec);
     //std::cout << "app start-up time: " << timediff << " us" << std::endl;
     //gettimeofday(&time1, NULL);
+    
+    signalI2C();
     return app.run();
 }
+
+// set the I2C signal
+void signalI2C()
+{
+    int file;
+    char buff[10];
+    
+    // open the i2c
+    file = open("/dev/i2c-1", O_RDWR);
+    if (file <0) {
+        std::cout << "Failed to open /dev/i2c-1" << std::endl;
+        return;
+    }
+    
+    // specify the slave address
+    int addr = 0x20;
+    if (ioctl(file, I2C_SLAVE, addr) < 0) {
+        close(file);
+    	std::cout << "Failed to specify a valid I2C slave address" << std::endl;
+        return;
+    }    
+    
+    // force GP6 output high
+    buff[0] = 0x09;
+    buff[1] = 0x40;
+    if (write(file, buff, 2) != 2) {
+        // failed to write output high
+        close(file);
+        return;
+    }
+       
+    // set the pins all as outputs
+    buff[0] = 0x00; 	// select IODIR register 
+    buff[1] = 0x00;	// set to all outputs
+    if (write(file, buff, 2) != 2) {
+        // failed to set IODIR register
+        close(file);
+        return;
+    }
+    
+    // force GP6 output low
+    buff[0] = 0x09;
+    buff[1] = 0x00;
+    if (write(file, buff, 2) != 2) {
+        // failed to write output
+        close(file);
+        return;
+    }
+    
+    close(file);
+}
+
+
+
+
+
+
