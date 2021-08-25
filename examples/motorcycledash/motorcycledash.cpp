@@ -1249,7 +1249,8 @@ int main(int argc, char** argv)
             //needles
             for (int i=0; i<8; i++)
             {
-                if (!(timer_cnt % 9)) {
+                if (!(timer_cnt % 6)) 
+                {
 		     if (is_increasing)
 		     {
 		         NeedleBase[needle_index]->show();
@@ -1262,7 +1263,7 @@ int main(int argc, char** argv)
                 }
                 else
                 {
-                    return;
+                    return "needle_move";
                 }
 
                 if (is_increasing && MAX_NEEDLE_INDEX == needle_index)
