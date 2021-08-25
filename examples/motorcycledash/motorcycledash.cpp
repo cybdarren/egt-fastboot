@@ -1255,7 +1255,14 @@ int main(int argc, char** argv)
                 }
                 else
                 {
-                    NeedleBase[needle_index]->hide();
+                    if (!(timer_cnt % 9))
+                    {
+                        NeedleBase[needle_index]->hide();
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
                 if (is_increasing && MAX_NEEDLE_INDEX == needle_index)
