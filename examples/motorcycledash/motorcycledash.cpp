@@ -1249,20 +1249,20 @@ int main(int argc, char** argv)
             //needles
             for (int i=0; i<8; i++)
             {
-                if (is_increasing)
-                {
-                    NeedleBase[needle_index]->show();
+                if (!(timer_cnt % 9)) {
+		     if (is_increasing)
+		     {
+		         NeedleBase[needle_index]->show();
+		     }
+		     else
+		     {
+		         NeedleBase[needle_index]->hide();
+
+		     }
                 }
                 else
                 {
-                    if (!(timer_cnt % 9))
-                    {
-                        NeedleBase[needle_index]->hide();
-                    }
-                    else
-                    {
-                        return;
-                    }
+                    return;
                 }
 
                 if (is_increasing && MAX_NEEDLE_INDEX == needle_index)
