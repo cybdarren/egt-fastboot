@@ -950,8 +950,8 @@ int main(int argc, char** argv)
 
 #ifdef HAVE_LIBPLANES
     //Scale effect variables
-    float scale_factor = 0.01;
-    bool is_scale_rev = false;
+    float scale_factor = 2.19;
+    bool is_scale_rev = true;		// start with a large image and reduce
     bool is_scale_2_max = false;
     bool is_scale_finish = false;
 #endif
@@ -2294,13 +2294,13 @@ int main(int argc, char** argv)
     });
 
 #ifdef HAVE_LIBPLANES
-    egt::PeriodicTimer scale_timer(std::chrono::milliseconds(16));
+    egt::PeriodicTimer scale_timer(std::chrono::milliseconds(25));
     scale_timer.on_timeout([&]()
     {
         //scale lambda function definition
         auto show_scale = [&]()
         {
-            if (2.2 <= scale_factor)
+            if (scale_factor >= 2.2)
             {
                 is_scale_rev = true;
                 is_scale_2_max = true;
@@ -2317,7 +2317,7 @@ int main(int argc, char** argv)
                 return;
 #endif
             }
-            if (0.001 >= scale_factor)
+            if (scale_factor <= 0.001)
             {
                 //gettimeofday(&time2, NULL);
                 //timediff = (time1.tv_sec < time2.tv_sec) ? (time2.tv_usec + 1000000 - time1.tv_usec) : (time2.tv_usec - time1.tv_usec);
